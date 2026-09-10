@@ -1,14 +1,27 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
+import Navbar from "./components/common/Navbar";
+import Footer from "./components/common/Footer";
+import StoreProvider from "./store/StoreProvider";
+import { Toaster } from "react-hot-toast";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+
+const spaceGrotesk = localFont({
+  src: "./fonts/SpaceGrotesk-VariableFont_wght.ttf",
+  variable: "--font-space-grotesk",
+  weight: "300 700",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const dmSans = localFont({
+  src: "./fonts/DMSans-VariableFont.ttf",
+  variable: "--font-dm-sans",
+  weight: "100 1000",
+});
+
+const comfortaa = localFont({
+  src: "./fonts/Comfortaa-VariableFont_wght.ttf",
+  variable: "--font-comfortaa",
+  weight: "300 700",
 });
 
 export const metadata = {
@@ -20,9 +33,22 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${dmSans.variable} ${comfortaa.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+       
+       
+       <StoreProvider>
+        <Navbar/>
+        {children}
+        <Footer/>
+        </StoreProvider>
+         <Toaster position="top-center" toastOptions={{
+    style: { background: '#2a1f1a', color: '#f5e6d3', border: '1px solid #4a3a2a' },
+  }} />
+       
+        
+        </body>
     </html>
   );
 }
