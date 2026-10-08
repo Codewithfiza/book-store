@@ -42,7 +42,7 @@ const CheckoutPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handlePlaceOrder = (e) => {
+ const handlePlaceOrder = async (e) => {
     e.preventDefault();
     if (items.length === 0) {
       toast.error("Your cart is empty");
@@ -53,20 +53,32 @@ const CheckoutPage = () => {
       return;
     }
 
-    // No backend yet — stash the order locally so the confirmation page can read it
-    const order = {
-      items,
-      subtotal,
-      deliveryFee,
-      total,
-      customer: form,
-      placedAt: new Date().toISOString(),
-    };
-    localStorage.setItem('lastOrder', JSON.stringify(order));
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items,
+          customer: form,
+          subtotal,
+          deliveryFee,
+          total,
+        }),
+      });
 
-    dispatch(clearCart());
-    toast.success("Order placed!");
-    router.push('/confirmation');
+      const order = await res.json();
+
+      if (!res.ok) {
+        toast.error(order.error || "Something went wrong. Please try again.");
+        return;
+      }
+
+      dispatch(clearCart());
+      toast.success("Order placed!");
+      router.push(`/confirmation?orderId=${order._id}`);
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    }
   };
 
   if (items.length === 0) {
@@ -91,9 +103,7 @@ const CheckoutPage = () => {
       <h1 className="font-display text-2xl sm:text-3xl text-glow mb-8 sm:mb-10">Checkout</h1>
 
       <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
-        {/* Left: form */}
         <div className="lg:col-span-2 flex flex-col gap-8">
-          {/* Delivery address */}
           <div>
             <h2 className="font-display text-lg mb-4">Delivery Address</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -152,7 +162,6 @@ const CheckoutPage = () => {
             </div>
           </div>
 
-          {/* Delivery option — static */}
           <div>
             <h2 className="font-display text-lg mb-4">Delivery Option</h2>
             <div className="flex items-center gap-3 border border-primary rounded-lg p-4 bg-surface">
@@ -164,7 +173,6 @@ const CheckoutPage = () => {
             </div>
           </div>
 
-          {/* Payment method — static */}
           <div>
             <h2 className="font-display text-lg mb-4">Payment Method</h2>
             <div className="flex items-center gap-3 border border-primary rounded-lg p-4 bg-surface">
@@ -177,7 +185,6 @@ const CheckoutPage = () => {
           </div>
         </div>
 
-        {/* Right: order summary */}
         <div className="lg:col-span-1">
           <div className="border border-wood rounded-xl bg-surface p-5 sm:p-7 sticky top-24">
             <h2 className="font-display text-lg mb-5">Order Summary</h2>

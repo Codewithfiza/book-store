@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { List, X, ShoppingCart, Envelope } from "@phosphor-icons/react";
@@ -9,6 +10,7 @@ import CartIcon from "./CartIcon";
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+   const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -16,6 +18,8 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+   if (pathname.startsWith("/admin")) return null;
+   
   return (
     <header
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${

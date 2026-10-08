@@ -1,17 +1,36 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from "next/link";
 import { CheckCircleIcon, PackageIcon } from "@phosphor-icons/react";
 
-const ConfirmationPage = () => {
+const ConfirmationContent = () => {
   const [order, setOrder] = useState(null);
-  const [orderNo] = useState(() => Math.floor(10000000 + Math.random() * 90000000));
+  const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get('orderId');
 
   useEffect(() => {
-    const saved = localStorage.getItem('lastOrder');
-    if (saved) setOrder(JSON.parse(saved));
-  }, []);
+    if (!orderId) {
+      setLoading(false);
+      return;
+    }
+    fetch(`/api/orders/${orderId}`)
+      .then(res => res.json())
+      .then(data => {
+        setOrder(data);
+        setLoading(false);
+      });
+  }, [orderId]);
+
+  if (loading) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-28 text-center">
+        <p className="text-muted">Loading your order...</p>
+      </div>
+    );
+  }
 
   if (!order) {
     return (
@@ -22,14 +41,15 @@ const ConfirmationPage = () => {
     );
   }
 
-  const { items, subtotal, deliveryFee, total, customer, placedAt } = order;
-  const orderDate = new Date(placedAt).toLocaleDateString('en-US', {
+  const { items, subtotal, deliveryFee, total, customer, orderNumber, createdAt } = order;
+  const orderDate = new Date(createdAt).toLocaleDateString('en-US', {
     year: 'numeric', month: 'long', day: 'numeric',
   });
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-24 sm:pt-28 pb-16">
       <div className="border border-wood rounded-xl bg-surface overflow-hidden">
+
         {/* Header */}
         <div className="text-center px-6 sm:px-10 pt-10 sm:pt-12 pb-8">
           <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border border-primary flex items-center justify-center mx-auto mb-5">
@@ -38,7 +58,7 @@ const ConfirmationPage = () => {
           <h1 className="font-display text-xl sm:text-2xl text-glow mb-2">
             Thanks for your order, {customer.firstName}.
           </h1>
-          <p className="text-sm text-dim">Order No. {orderNo}</p>
+          <p className="text-sm text-dim">Order No. {orderNumber}</p>
         </div>
 
         {/* Shipping / date info */}
@@ -59,7 +79,7 @@ const ConfirmationPage = () => {
           </div>
         </div>
 
-        {/* Status message + track button */}
+        {/* Status */}
         <div className="border-t border-wood px-6 sm:px-10 py-8 text-center">
           <div className="flex items-center justify-center gap-2 text-dim text-sm mb-6">
             <PackageIcon size={18} />
@@ -80,7 +100,7 @@ const ConfirmationPage = () => {
 
           <div className="flex flex-col gap-5">
             {items.map((item) => (
-              <div key={item.id} className="flex flex-col sm:flex-row gap-4">
+              <div key={item._id} className="flex flex-col sm:flex-row gap-4">
                 <img
                   src={item.image}
                   alt={item.title}
@@ -102,12 +122,10 @@ const ConfirmationPage = () => {
 
           <div className="border-t border-wood mt-6 pt-6 flex flex-col gap-2 text-sm">
             <div className="flex justify-between text-muted">
-              <span>Subtotal</span>
-              <span>Rs {subtotal}</span>
+              <span>Subtotal</span><span>Rs {subtotal}</span>
             </div>
             <div className="flex justify-between text-muted">
-              <span>Delivery</span>
-              <span>Rs {deliveryFee}</span>
+              <span>Delivery</span><span>Rs {deliveryFee}</span>
             </div>
             <div className="flex justify-between items-center pt-3 mt-1 border-t border-wood">
               <span className="font-body text-base">Total</span>
@@ -124,6 +142,18 @@ const ConfirmationPage = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const ConfirmationPage = () => {
+  return (
+    <Suspense fallback={
+      <div className="max-w-2xl mx-auto px-4 py-28 text-center">
+        <p className="text-muted">Loading...</p>
+      </div>
+    }>
+      <ConfirmationContent />
+    </Suspense>
   );
 };
 

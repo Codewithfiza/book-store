@@ -1,43 +1,6 @@
 "use client";
-import { Star } from "@phosphor-icons/react";
-
-const reviews = [
-  {
-    id: 1,
-    name: "Ayesha K.",
-    rating: 5,
-    review: "The box alone made me want to keep it. Books arrived wrapped like a gift, not a shipment.",
-    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400",
-  },
-  {
-    id: 2,
-    name: "Hamza R.",
-    rating: 4,
-    review: "Fast delivery and the packaging kept the cover corners from getting dinged. Small thing that matters a lot.",
-    image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400",
-  },
-  {
-    id: 3,
-    name: "Sara M.",
-    rating: 5,
-    review: "Ordered Moby-Dick as a gift and the recipient sent me a photo before I even asked. That's rare.",
-    image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400",
-  },
-  {
-    id: 4,
-    name: "Bilal T.",
-    rating: 5,
-    review: "Genuinely didn't expect a tissue-wrapped bookmark tucked inside. Small touches like this build loyalty.",
-    image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400",
-  },
-  {
-    id: 5,
-    name: "Fatima N.",
-    rating: 4,
-    review: "Solid packaging, on-time delivery. Would've liked a thank-you note but overall a smooth first order.",
-    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400",
-  },
-];
+import { useEffect, useState } from "react";
+import { Star, CircleNotch } from "@phosphor-icons/react";
 
 const StarRating = ({ rating, max = 5 }) => (
   <div className="flex items-center gap-1">
@@ -52,30 +15,54 @@ const StarRating = ({ rating, max = 5 }) => (
   </div>
 );
 
-const ReviewCard = ({ name, rating, review, image }) => (
-  <div className="flex w-[420px] sm:w-[520px] flex-shrink-0 items-center gap-6 border border-black/10 bg-white p-6">
-    <div className="flex flex-1 flex-col gap-3">
-      <StarRating rating={rating} />
-      <p className="line-clamp-4 text-sm leading-relaxed text-black/70">
-        "{review}"
-      </p>
-      <p className="font-[var(--font-display)] text-sm font-semibold text-black">
-        — {name}
-      </p>
-    </div>
-
-    <div className="flex flex-shrink-0 items-center justify-center p-3">
-      <img
-        src={image}
-        alt={`Package received by ${name}`}
-        className="h-32 w-32 object-cover sm:h-36 sm:w-36"
-      />
-    </div>
+const ReviewCard = ({ name, rating, message }) => (
+  <div className="flex w-[340px] sm:w-[400px] flex-shrink-0 flex-col justify-center gap-3 border border-black/10 bg-white p-6">
+    <StarRating rating={rating} />
+    <p className="line-clamp-4 text-sm leading-relaxed text-black/70">
+      "{message}"
+    </p>
+    <p className="font-[var(--font-display)] text-sm font-semibold text-black">
+      — {name}
+    </p>
   </div>
 );
 
 const Reviews = () => {
-  const looped = [...reviews, ...reviews];
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchApproved = async () => {
+      try {
+        const res = await fetch("/api/feedback"); // defaults to status=approved
+        if (!res.ok) throw new Error("Failed to fetch reviews");
+        const data = await res.json();
+        setReviews(data);
+      } catch (err) {
+        console.error("Failed to load reviews:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApproved();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="flex w-full items-center justify-center gap-2 bg-[var(--color-bg)] py-16 text-[var(--color-text)]">
+        <CircleNotch size={20} className="animate-spin" />
+        Loading reviews...
+      </section>
+    );
+  }
+
+  if (reviews.length === 0) {
+    return null; // nothing approved yet — don't show an empty section
+  }
+
+  // Only loop the marquee if there's enough content to make it feel continuous
+  const looped = reviews.length >= 3 ? [...reviews, ...reviews] : reviews;
 
   return (
     <section className="relative w-full overflow-hidden bg-[var(--color-bg)] py-16">
@@ -86,7 +73,7 @@ const Reviews = () => {
       <div className="reviews-fade relative w-full overflow-hidden">
         <div className="animate-marquee flex w-max gap-6 px-4">
           {looped.map((r, i) => (
-            <ReviewCard key={`${r.id}-${i}`} {...r} />
+            <ReviewCard key={`${r._id}-${i}`} name={r.name} rating={r.rating} message={r.message} />
           ))}
         </div>
       </div>

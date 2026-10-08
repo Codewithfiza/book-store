@@ -38,7 +38,7 @@ const GenreShowcase = ({genre, books}) => {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6">
           {filteredBooks.map((book, i) => (
-            <BookCard key={book.id} book={book} index={i} />
+            <BookCard key={book._id} book={book} index={i} />
           ))}
         </div>
       )}

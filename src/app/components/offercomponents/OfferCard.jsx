@@ -5,7 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 const OfferCard = ({offer}) => {
-    const { id, image, title, price, oldPrice, discount } = offer;
+    const { _id, image, title, price, offerPrice } = offer;
+    const discount = Math.round((1 - offerPrice / price) * 100);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -15,7 +17,7 @@ const OfferCard = ({offer}) => {
       whileHover={{ y: -6 }}
       className="group relative w-full rounded-xl overflow-hidden bg-surface border border-wood shadow-soft hover:shadow-glow transition-shadow duration-300"
     >
-      {discount && (
+      {discount > 0 && (
         <span className="absolute top-3 left-3 z-10 bg-accent text-bg text-xs font-semibold px-2 py-1 rounded-full">
           {discount}% OFF
         </span>
@@ -34,14 +36,12 @@ const OfferCard = ({offer}) => {
           {title}
         </h3>
         <div className="flex items-center gap-2">
-          <span className="text-primary font-semibold text-lg">Rs {price}</span>
-          {oldPrice && (
-            <span className="text-dim line-through text-sm">Rs {oldPrice}</span>
-          )}
+          <span className="text-primary font-semibold text-lg">Rs {offerPrice}</span>
+          <span className="text-dim line-through text-sm">Rs {price}</span>
         </div>
 
         <Link
-          href={`/offerPage/${id}`}
+          href={`/offerPage/${_id}`}
           className="mt-2 inline-block text-center text-sm font-medium text-bg bg-primary hover:bg-glow transition-colors duration-300 rounded-lg py-2"
         >
           Read More

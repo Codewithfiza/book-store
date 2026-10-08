@@ -58,11 +58,11 @@ const BookCard = ({book, index=0}) => {
         </h3>
         <p className="font-body text-xs sm:text-sm text-dim">{author}</p>
         <p className="font-accent text-sm sm:text-base text-primary mt-1">
-          ${price}
+          Rs {price}
         </p>
 
         <Link
-          href={`/shop/${genre}/${slug}`}
+          href={`/shop/${genre.slug}/${slug}`}
           className="mt-3 inline-flex items-center justify-center gap-2 w-full px-4 py-2 rounded-md font-accent text-[13px] sm:text-sm bg-accent text-bg shadow-glow transition-shadow duration-300 hover:shadow-glow-lg whitespace-nowrap"
         >
           Read More

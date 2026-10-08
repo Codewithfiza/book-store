@@ -1,50 +1,9 @@
 "use client";
 import { motion, useScroll, useTransform } from "framer-motion";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ShopCartActions from "../common/ShopCartIcons";
 
-const books = [
-  {
-    title: "Pride and Prejudice",
-    author: "Jane Austen",
-    blurb:
-      "Elizabeth Bennet navigates love, family pressure, and her own prejudice as she clashes with the proud Mr. Darcy — a sharp, witty look at manners and marriage in Regency England.",
-    src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1pxqTTmRLO2TOVKgpHL9gzqLYg5lJiNRhiHsDo6KE8g&s=10",
-    href: "/shop/romance/pride-and-prejudice",
-  },
-  {
-    title: "Frankenstein",
-    author: "Mary Shelley",
-    blurb:
-      "A brilliant but reckless scientist gives life to a creature of his own making — and unravels his own life in the process. A haunting meditation on ambition and responsibility.",
-    src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1pxqTTmRLO2TOVKgpHL9gzqLYg5lJiNRhiHsDo6KE8g&s=10",
-    href: "/shop/frankenstein",
-  },
-  {
-    title: "Dracula",
-    author: "Bram Stoker",
-    blurb:
-      "A young solicitor's visit to a remote Transylvanian castle unleashes an ancient evil upon England. The novel that defined the modern vampire myth.",
-    src: "https://covers.openlibrary.org/b/isbn/9780141439846-L.jpg",
-    href: "/shop/dracula",
-  },
-  {
-    title: "The Picture of Dorian Gray",
-    author: "Oscar Wilde",
-    blurb:
-      "A young man remains eternally youthful while his portrait bears the marks of his moral decay — a dark, glittering fable about vanity and hidden sin.",
-    src: "https://covers.openlibrary.org/b/isbn/9780141439570-L.jpg",
-    href: "/shop/dorian-gray",
-  },
-  {
-    title: "Moby-Dick",
-    author: "Herman Melville",
-    blurb:
-      "Captain Ahab's obsessive hunt for the white whale becomes a sprawling, philosophical voyage into obsession, fate, and the vastness of the sea.",
-    src: "https://covers.openlibrary.org/b/isbn/9780142437247-L.jpg",
-    href: "/shop/moby-dick",
-  },
-];
+
 
 const StickyCard_001 = ({ i, title, author, blurb, src, href, progress, range, targetScale }) => {
   const container = useRef(null);
@@ -85,19 +44,51 @@ const StickyCard_001 = ({ i, title, author, blurb, src, href, progress, range, t
 };
 
 const FeaturedBook = () => {
-  const container = useRef(null);
+  const contain = useRef(null);
+   const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { scrollYProgress } = useScroll({
-    target: container,
+    target: contain,
     offset: ["start end", "end start"],
   });
 
+
+
+  const fetchFeatured = async () => {
+      try {
+        const res = await fetch("/api/featured-books");
+        const data = await res.json();
+
+        const formatted = data.map((f) => ({
+          title: f.book.title,
+          author: f.book.author,
+          blurb: f.book.description,
+          src: f.book.image,
+          href: `/shop/${f.book.slug}`,
+        }));
+         setBooks(formatted);
+      } catch (error) {
+        console.error("Failed to load featured books:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+
+    useEffect(()=>{
+      fetchFeatured();
+    }, [])
+
+    if (loading || books.length === 0) return null;
+
+   
   return (
     <section className="relative w-full bg-[var(--color-bg)]">
       <h2 className="relative mb-10 pt-16 text-center font-[var(--font-display)] text-2xl font-semibold uppercase tracking-wide text-[var(--color-text)] sm:text-3xl">
         Best Selling Books
       </h2>
 
-      <main ref={container} className="relative flex w-full flex-col items-center ">
+      <main ref={contain} className="relative flex w-full flex-col items-center ">
         {books.map((book, i) => {
           const targetScale = Math.max(0.5, 1 - (books.length - i - 1) * 0.1);
           return (

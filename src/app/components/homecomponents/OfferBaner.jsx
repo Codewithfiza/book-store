@@ -3,17 +3,11 @@ import React from "react";
 import { ArrowRight, Tag } from "@phosphor-icons/react";
 import Link from "next/link";
 
-// Demo data — later this comes from GET /api/offers/current
-const currentOffer = {
-  title: "Monsoon Reading Sale",
-  subtitle: "Flat 25% off on all fiction and self-help titles",
-  discountPercent: 25,
-  imageDesktop: "/images/bannerdesktop.png", // quiet/dark space on the LEFT
-  imageMobile: "/images/bannerMobile.png",   // quiet/dark space at the BOTTOM
-  endDate: "2026-09-15",
-};
 
-export default function OfferBanner({ offer = currentOffer }) {
+
+export default function OfferBanner({ offer }) {
+  if (!offer) return null;
+
   return (
     <div className="relative w-full rounded-lg overflow-hidden aspect-[4/5] sm:aspect-[2.9/1]">
       {/* Mobile image — visible below sm breakpoint */}
