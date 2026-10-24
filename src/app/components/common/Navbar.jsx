@@ -57,13 +57,13 @@ export default function Navbar() {
             </Link>
           </li>
           <li>
-            <Link href="/about" className="transition-colors hover:text-glow">
-              About
+            <Link href="/feedback" className="transition-colors hover:text-glow">
+              Feedback
             </Link>
           </li>
           <li>
-            <Link href="/contact" className="transition-colors hover:text-glow">
-              Contact
+            <Link href="/about" className="transition-colors hover:text-glow">
+              About us
             </Link>
           </li>
         </ul>
@@ -115,20 +115,20 @@ export default function Navbar() {
             </li>
             <li>
               <Link
-                href="/about"
+                href="/feedback"
                 onClick={() => setMenuOpen(false)}
                 className="block transition-colors hover:text-glow"
               >
-                About
+                Feedback
               </Link>
             </li>
             <li>
               <Link
-                href="/contact"
+                href="/about"
                 onClick={() => setMenuOpen(false)}
                 className="block transition-colors hover:text-glow"
               >
-                Contact
+                About us
               </Link>
             </li>
           </ul>
