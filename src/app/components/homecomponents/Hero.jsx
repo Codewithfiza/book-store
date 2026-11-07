@@ -82,10 +82,10 @@ export default function Hero() {
             </Link>
 
             <Link
-              href="/reading-room"
+              href="/about"
               className=" w-full rounded-md border border-accent px-8 py-3 text-center font-body text-sm font-bold uppercase tracking-wide text-accent transition-colors hover:bg-accent/10 sm:w-auto"
             >
-              Enter Reading Room
+              Read About us
             </Link>
           </div>
         </div>

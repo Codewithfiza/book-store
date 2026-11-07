@@ -10,10 +10,10 @@ const StickyCard_001 = ({ i, title, author, blurb, src, href, progress, range, t
   const scale = useTransform(progress, range, [1, targetScale]);
 
   return (
-    <div ref={container} className="sticky top-0 flex h-screen items-center justify-center px-4">
+    <div ref={container} className="sticky top-0 flex h-screen w-full items-center justify-center px-4">
       <motion.div
         style={{ scale, top: `calc(-5vh + ${i * 20 + 20}px)`, zIndex: i }}
-        className="relative -top-1/4 flex w-full max-w-4xl origin-top flex-col overflow-hidden rounded-3xl border border-white/10 bg-[var(--color-surface)]/30 shadow-[0_8px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:min-h-[420px] sm:flex-row"
+        className="relative -top-1/4 flex w-full max-w-4xl origin-top flex-col overflow-hidden rounded-3xl border border-white/10 bg-[var(--color-surface)]/30 shadow-[0_8px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:h-[420px] sm:flex-row"
       >
         <div className="flex w-full flex-shrink-0 items-center justify-center p-6 sm:w-[42%] sm:p-8">
           <img
@@ -64,7 +64,7 @@ const FeaturedBook = () => {
           author: f.book.author,
           blurb: f.book.description,
           src: f.book.image,
-          href: `/shop/${f.book.slug}`,
+          href: `/shop/${f.book.genre.slug}/${f.book.slug}`,
         }));
          setBooks(formatted);
       } catch (error) {

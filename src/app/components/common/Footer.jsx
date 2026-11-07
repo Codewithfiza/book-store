@@ -13,19 +13,13 @@ import {
 
 const footerLinks = {
   Shop: [
-    { label: "New Arrivals", href: "/shop/new" },
-    { label: "Best Sellers", href: "/shop/best-sellers" },
-    { label: "Genres", href: "/genres" },
+    { label: "Home", href: "/" },
+    { label: "Shop", href: "/shop" },
+    { label: "Best Sellers", href: "/#best-sellers" },
   ],
   Company: [
     { label: "About Us", href: "/about" },
-    { label: "Contact", href: "/contact" },
-    { label: "Blog", href: "/blog" },
-  ],
-  Support: [
-    { label: "FAQs", href: "/faq" },
-    { label: "Shipping", href: "/shipping" },
-    { label: "Returns", href: "/returns" },
+    { label: "Feedback", href: "/feedback" },
   ],
 };
 

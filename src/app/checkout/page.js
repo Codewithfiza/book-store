@@ -7,8 +7,10 @@ import { ArrowLeftIcon, TruckIcon, MoneyIcon } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from 'react-hot-toast';
+import CheckoutGuard from '../components/auth/CheckoutGuard';
 
-const CheckoutPage = () => {
+
+const CheckoutContent = () => {
   const items = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
   const router = useRouter();
@@ -237,4 +239,12 @@ const CheckoutPage = () => {
   );
 };
 
+
+const CheckoutPage = () => (
+  <CheckoutGuard>
+    <CheckoutContent />
+  </CheckoutGuard>
+);
+
 export default CheckoutPage;
+

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from 'react-redux';
 import { removeFromCart, updateQty } from '@/app/store/cartSlice';
 import { TrashIcon, MinusIcon, PlusIcon, ArrowLeftIcon } from "@phosphor-icons/react";
@@ -10,6 +12,24 @@ import toast from 'react-hot-toast';
 const CartPage = () => {
   const items = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
+
+  const router = useRouter();
+const [checkingOut, setCheckingOut] = useState(false);
+
+const handleCheckout = async () => {
+  setCheckingOut(true);
+  try {
+    const res = await fetch("/api/customer/status");
+    router.push(res.ok ? "/checkout" : "/account?redirect=/checkout");
+  } catch {
+    router.push("/account?redirect=/checkout");
+  } finally {
+    setCheckingOut(false);
+  }
+};
+
+
+
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const deliveryFee = items.length > 0 ? 150 : 0;
@@ -157,12 +177,13 @@ if (items.length === 0) {
               <span className="font-accent text-xl text-primary">Rs {total}</span>
             </div>
 
-            <Link
-              href="/checkout"
-              className="mt-6 w-full inline-flex justify-center items-center px-6 py-3.5 rounded-md font-accent text-sm bg-accent text-bg shadow-glow transition-shadow duration-300 hover:shadow-glow-lg"
-            >
-              Go to Checkout
-            </Link>
+            <button
+  onClick={handleCheckout}
+  disabled={checkingOut}
+  className="mt-6 w-full inline-flex justify-center items-center px-6 py-3.5 rounded-md font-accent text-sm bg-accent text-bg shadow-glow transition-shadow duration-300 hover:shadow-glow-lg disabled:opacity-70"
+>
+  {checkingOut ? "Please wait..." : "Go to Checkout"}
+</button>
           </div>
         </div>
       </div>

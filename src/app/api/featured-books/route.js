@@ -2,6 +2,7 @@ import dbConnect from "@/lib/mongodb";
 import FeaturedBook from "@/models/FeaturedBook";
 import Book from "@/models/Book";
 import { NextResponse } from "next/server";
+import Genre from "@/models/Genre";
 
 const MAX_FEATURED = 5;
 
@@ -12,7 +13,7 @@ export async function GET(){
 
            const featured = await FeaturedBook.find()
       .sort({ order: 1 })
-      .populate("book")
+      .populate({ path: "book", populate: { path: "genre" } })
       .lean();
 
       return NextResponse.json(featured);

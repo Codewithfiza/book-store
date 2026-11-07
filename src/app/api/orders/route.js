@@ -3,6 +3,7 @@ import Order from '@/models/Order';
 import Book from '@/models/Book';
 import { getSessionFromRequest } from '@/lib/getSession';
 import { NextResponse } from 'next/server';
+import { getCustomerSessionFromRequest } from '@/lib/getCustomerSession';
 
 export async function GET(request) {
   await dbConnect();
@@ -19,6 +20,16 @@ export async function GET(request) {
 
 export async function POST(request) {
   await dbConnect();
+
+
+  const customerSession = await getCustomerSessionFromRequest(request);
+  if (!customerSession) {
+    return NextResponse.json(
+      { error: 'Please log in to place an order.' },
+      { status: 401 }
+    );
+  }
+  
   const body = await request.json();
 
   const succeeded = []; // track { bookId, quantity } for rollback if needed
