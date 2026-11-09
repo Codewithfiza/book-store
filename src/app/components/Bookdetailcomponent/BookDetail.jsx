@@ -97,7 +97,7 @@ const BookDetail = ({ book }) => {
             by {author}
           </p>
           <p className="font-accent text-xl sm:text-2xl text-primary opacity-0">
-            ${price}
+            {price}Rs
           </p>
 
           {/* Stock status */}

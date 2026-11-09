@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import SearchInput from '../components/SearchInput';
 import { TrashIcon, PencilSimpleIcon, StarIcon } from "@phosphor-icons/react";
 import toast from 'react-hot-toast';
 
@@ -25,13 +26,32 @@ const AdminBooksPage = () => {
   const [editingId, setEditingId] = useState(null);
   const [featuredMap, setFeaturedMap] = useState({}); // { bookId: featuredDocId }
 
-  const fetchBooks = async () => {
-    setLoading(true);
+  const [query, setQuery] = useState('');
+
+const filteredBooks = useMemo(() => {
+  const q = query.trim().toLowerCase();
+  if (!q) return books;
+  return books.filter(
+    (b) =>
+      b.title?.toLowerCase().includes(q) ||
+      b.author?.toLowerCase().includes(q) ||
+      b.genre?.name?.toLowerCase().includes(q)
+  );
+}, [books, query]);
+
+ const fetchBooks = async () => {
+  setLoading(true);
+  try {
     const res = await fetch('/api/books');
-    const data = await res.json();
-    setBooks(data);
+    if (!res.ok) throw new Error('Failed');
+    setBooks(await res.json());
+  } catch {
+    toast.error('Could not load books');
+    setBooks([]);
+  } finally {
     setLoading(false);
-  };
+  }
+};
 
   const fetchGenres = async () => {
     const res = await fetch('/api/genres');
@@ -300,73 +320,90 @@ const AdminBooksPage = () => {
         </div>
       </form>
 
-      {loading ? (
-        <p className="text-dim text-sm">Loading books...</p>
-      ) : books.length === 0 ? (
-        <p className="text-dim text-sm">No books yet — add one above.</p>
-      ) : (
-        <div className="flex flex-col gap-2 sm:gap-3">
-          {books.map((book) => {
-            const stock = book.stock ?? 0;
-            return (
-              <div
-                key={book._id}
-                className="flex items-center gap-3 border border-wood rounded-lg bg-surface p-2.5 sm:p-4"
-              >
-                {book.image && (
-                  <img
-                    src={book.image}
-                    alt={book.title}
-                    className="w-12 h-14 sm:w-14 sm:h-16 rounded-md object-cover flex-shrink-0"
-                  />
-                )}
-                <div className="min-w-0 flex-1">
-                  <p className="font-body text-sm sm:text-base text-foreground truncate">
-                    {book.title}
-                  </p>
-                  <p className="text-xs text-dim truncate">
-                    {book.author} · {book.genre?.name || 'No genre'} · Rs {book.price} ·{' '}
-                    <span className={stock === 0 ? 'text-red-500' : ''}>
-                      {stock === 0 ? 'Out of stock' : `Stock: ${stock}`}
-                    </span>
-                     {book.onOffer && (
-    <span className="text-xs text-accent"> · On Offer: Rs {book.offerPrice}</span>
-  )}
-                  </p>
-                </div>
+   {loading ? (
+  <p className="text-dim text-sm">Loading books...</p>
+) : books.length === 0 ? (
+  <p className="text-dim text-sm">No books yet — add one above.</p>
+) : (
+  <>
+    <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <SearchInput
+        value={query}
+        onChange={setQuery}
+        placeholder="Search by title, author or genre"
+      />
+      <p className="text-xs text-dim">
+        Showing {filteredBooks.length} of {books.length} books
+      </p>
+    </div>
 
-                <div className="flex gap-2 sm:gap-3 flex-shrink-0">
-                  <button
-                    onClick={() => toggleFeatured(book)}
-                    className={
-                      featuredMap[book._id]
-                        ? "text-accent transition-colors p-1"
-                        : "text-dim hover:text-accent transition-colors p-1"
-                    }
-                    aria-label={featuredMap[book._id] ? "Remove from featured" : "Add to featured"}
-                  >
-                    <StarIcon size={18} weight={featuredMap[book._id] ? "fill" : "regular"} />
-                  </button>
-                  <button
-                    onClick={() => handleEdit(book)}
-                    className="text-dim hover:text-primary transition-colors p-1"
-                    aria-label="Edit book"
-                  >
-                    <PencilSimpleIcon size={18} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(book)}
-                    className="text-dim hover:text-red-500 transition-colors p-1"
-                    aria-label="Delete book"
-                  >
-                    <TrashIcon size={18} />
-                  </button>
-                </div>
+    {filteredBooks.length === 0 ? (
+      <p className="text-dim text-sm">{`No books match "${query}".`}</p>
+    ) : (
+      <div className="flex flex-col gap-2 sm:gap-3">
+        {filteredBooks.map((book) => {
+          const stock = book.stock ?? 0;
+          return (
+            <div
+              key={book._id}
+              className="flex items-center gap-3 border border-wood rounded-lg bg-surface p-2.5 sm:p-4"
+            >
+              {book.image && (
+                <img
+                  src={book.image}
+                  alt={book.title}
+                  className="w-12 h-14 sm:w-14 sm:h-16 rounded-md object-cover flex-shrink-0"
+                />
+              )}
+              <div className="min-w-0 flex-1">
+                <p className="font-body text-sm sm:text-base text-foreground truncate">
+                  {book.title}
+                </p>
+                <p className="text-xs text-dim truncate">
+                  {book.author} · {book.genre?.name || 'No genre'} · Rs {book.price} ·{' '}
+                  <span className={stock === 0 ? 'text-red-500' : ''}>
+                    {stock === 0 ? 'Out of stock' : `Stock: ${stock}`}
+                  </span>
+                  {book.onOffer && (
+                    <span className="text-xs text-accent"> · On Offer: Rs {book.offerPrice}</span>
+                  )}
+                </p>
               </div>
-            );
-          })}
-        </div>
-      )}
+
+              <div className="flex gap-2 sm:gap-3 flex-shrink-0">
+                <button
+                  onClick={() => toggleFeatured(book)}
+                  className={
+                    featuredMap[book._id]
+                      ? "text-accent transition-colors p-1"
+                      : "text-dim hover:text-accent transition-colors p-1"
+                  }
+                  aria-label={featuredMap[book._id] ? "Remove from featured" : "Add to featured"}
+                >
+                  <StarIcon size={18} weight={featuredMap[book._id] ? "fill" : "regular"} />
+                </button>
+                <button
+                  onClick={() => handleEdit(book)}
+                  className="text-dim hover:text-primary transition-colors p-1"
+                  aria-label="Edit book"
+                >
+                  <PencilSimpleIcon size={18} />
+                </button>
+                <button
+                  onClick={() => handleDelete(book)}
+                  className="text-dim hover:text-red-500 transition-colors p-1"
+                  aria-label="Delete book"
+                >
+                  <TrashIcon size={18} />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    )}
+  </>
+)}
     </div>
   );
 };
