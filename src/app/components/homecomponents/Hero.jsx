@@ -39,7 +39,7 @@ export default function Hero() {
         alt="A candlelit library desk with a globe, open antique books, and a fireplace"
         fill
         priority
-        sizes="100vw"
+        sizes="(min-width: 768px) 100vw, 1px"
         className="hidden object-cover md:block"
       />
 
@@ -49,7 +49,7 @@ export default function Hero() {
         alt="A candlelit library desk with a globe, open antique books, and a fireplace"
         fill
         priority
-        sizes="100vw"
+        sizes="(max-width: 767px) 100vw, 1px"
         className="object-cover md:hidden"
       />
 

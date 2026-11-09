@@ -43,52 +43,21 @@ const StickyCard_001 = ({ i, title, author, blurb, src, href, progress, range, t
   );
 };
 
-const FeaturedBook = () => {
+// New component: only mounted once books are ready
+const FeaturedBookList = ({ books }) => {
   const contain = useRef(null);
-   const [books, setBooks] = useState([]);
-  const [loading, setLoading] = useState(true);
   const { scrollYProgress } = useScroll({
     target: contain,
     offset: ["start end", "end start"],
   });
 
-
-
-  const fetchFeatured = async () => {
-      try {
-        const res = await fetch("/api/featured-books");
-        const data = await res.json();
-
-        const formatted = data.map((f) => ({
-          title: f.book.title,
-          author: f.book.author,
-          blurb: f.book.description,
-          src: f.book.image,
-          href: `/shop/${f.book.genre.slug}/${f.book.slug}`,
-        }));
-         setBooks(formatted);
-      } catch (error) {
-        console.error("Failed to load featured books:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-
-    useEffect(()=>{
-      fetchFeatured();
-    }, [])
-
-    if (loading || books.length === 0) return null;
-
-   
   return (
     <section className="relative w-full bg-[var(--color-bg)]">
       <h2 className="relative mb-10 pt-16 text-center font-[var(--font-display)] text-2xl font-semibold uppercase tracking-wide text-[var(--color-text)] sm:text-3xl">
         Best Selling Books
       </h2>
 
-      <main ref={contain} className="relative flex w-full flex-col items-center ">
+      <main ref={contain} className="relative flex w-full flex-col items-center">
         {books.map((book, i) => {
           const targetScale = Math.max(0.5, 1 - (books.length - i - 1) * 0.1);
           return (
@@ -107,6 +76,40 @@ const FeaturedBook = () => {
       <ShopCartActions />
     </section>
   );
+};
+
+// This one only fetches data
+const FeaturedBook = () => {
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchFeatured = async () => {
+    try {
+      const res = await fetch("/api/featured-books");
+      const data = await res.json();
+
+      const formatted = data.map((f) => ({
+        title: f.book.title,
+        author: f.book.author,
+        blurb: f.book.description,
+        src: f.book.image,
+        href: `/shop/${f.book.genre.slug}/${f.book.slug}`,
+      }));
+      setBooks(formatted);
+    } catch (error) {
+      console.error("Failed to load featured books:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFeatured();
+  }, []);
+
+  if (loading || books.length === 0) return null;
+
+  return <FeaturedBookList books={books} />;
 };
 
 export { FeaturedBook, StickyCard_001 };
