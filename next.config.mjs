@@ -7,6 +7,7 @@ const nextConfig = {
       { hostname: 'picsum.photos' },
       { hostname: 'friendsbook.pk' },
        { hostname: 'books.google.com.pk' },
+        { hostname: 'd9z6htgewkjtb.cloudfront.net' },
     ],
   },
 };

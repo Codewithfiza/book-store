@@ -2,6 +2,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import ShopCartActions from "../common/ShopCartIcons";
+import Image from "next/image";
 
 
 
@@ -15,13 +16,20 @@ const StickyCard_001 = ({ i, title, author, blurb, src, href, progress, range, t
         style={{ scale, top: `calc(-5vh + ${i * 20 + 20}px)`, zIndex: i }}
         className="relative -top-1/4 flex w-full max-w-4xl origin-top flex-col overflow-hidden rounded-3xl border border-white/10 bg-[var(--color-surface)]/30 shadow-[0_8px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:h-[420px] sm:flex-row"
       >
-        <div className="flex w-full flex-shrink-0 items-center justify-center p-6 sm:w-[42%] sm:p-8">
-          <img
-            src={src}
-            alt={title}
-            className="h-[180px] w-full rounded-xl object-cover sm:h-full sm:max-h-[360px]"
-          />
-        </div>
+
+
+       <div className="flex w-full flex-shrink-0 items-center justify-center p-6 sm:w-[42%] sm:p-8">
+  <div className="relative h-[180px] w-full sm:h-full sm:max-h-[360px]">
+    <Image
+      src={src}
+      alt={title}
+      fill
+      sizes="(max-width: 640px) 100vw, 380px"
+      className="rounded-xl object-cover"
+    />
+  </div>
+</div>
+
 
         <div className="flex flex-1 flex-col justify-center gap-3 p-6 sm:p-10">
           <h3 className="font-[var(--font-display)] text-xl font-semibold text-[var(--color-text)] sm:text-2xl md:text-3xl">
