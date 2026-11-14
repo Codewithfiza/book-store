@@ -20,15 +20,14 @@ const handleCheckout = async () => {
   setCheckingOut(true);
   try {
     const res = await fetch("/api/customer/status");
-    router.push(res.ok ? "/checkout" : "/account?redirect=/checkout");
+    const data = res.ok ? await res.json() : null;
+    router.push(data && data.email ? "/checkout" : "/account?redirect=/checkout");
   } catch {
     router.push("/account?redirect=/checkout");
   } finally {
     setCheckingOut(false);
   }
 };
-
-
 
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);

@@ -32,6 +32,16 @@ export async function POST(request) {
   
   const body = await request.json();
 
+  if (!Array.isArray(body.items) || body.items.length === 0) {
+  return NextResponse.json({ error: 'Cart is empty.' }, { status: 400 });
+}
+
+for (const item of body.items) {
+  if (!Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 20) {
+    return NextResponse.json({ error: 'Invalid quantity.' }, { status: 400 });
+  }
+}
+
   const succeeded = []; // track { bookId, quantity } for rollback if needed
 
   try {

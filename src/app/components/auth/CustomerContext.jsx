@@ -18,7 +18,8 @@ export function CustomerProvider({ children }) {
   const refresh = useCallback(async () => {
     try {
       const res = await fetch("/api/customer/status", { cache: "no-store" });
-      setCustomer(res.ok ? await res.json() : null);
+      const data = res.ok ? await res.json() : null;
+      setCustomer(data && data.email ? data : null);
     } catch {
       setCustomer(null);
     } finally {

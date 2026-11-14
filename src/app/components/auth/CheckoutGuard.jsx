@@ -15,14 +15,16 @@ export default function CheckoutGuard({ children }) {
         const res = await fetch("/api/customer/status");
         if (cancelled) return;
 
-        if (res.ok) {
-          setChecked(true); // logged in, show checkout
-        } else {
-          router.replace("/account?redirect=/checkout");
-        }
-      } catch {
-        if (!cancelled) router.replace("/account?redirect=/checkout");
-      }
+         const data = res.ok ? await res.json() : null;
+
+    if (data && data.email) {
+      setChecked(true); // logged in, show checkout
+    } else {
+      router.replace("/account?redirect=/checkout");
+    }
+  } catch {
+    if (!cancelled) router.replace("/account?redirect=/checkout");
+  }
     }
 
     check();
