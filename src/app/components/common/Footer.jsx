@@ -31,7 +31,7 @@ const socials = [
 
 export default function Footer() {
   return (
-    <footer className="relative bg-[url('/images/footerMob.png')] md:bg-[url('/images/footer.png')] bg-cover bg-center bg-no-repeat">
+   <footer className="relative bg-[url('/images/footerMob.webp')] md:bg-[url('/images/footer.webp')] bg-cover bg-center bg-no-repeat">
       {/* Blend the navy photo into your brand palette */}
       <div className="absolute inset-0 bg-linear-to-t from-bg via-bg/50 to-bg/10" />
 
