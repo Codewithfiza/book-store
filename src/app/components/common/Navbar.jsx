@@ -63,16 +63,14 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/images/logo.jpeg"
-            alt="Scriptorium logo"
-            width={40}
-            height={40}
-            className="object-contain"
+            src="/images/logo-icon.webp"
+            alt="scriptorium"
+            width={140}
+            height={140}
+             className="h-14 w-auto object-contain md:h-16"
             priority
           />
-          <span className="font-display text-lg text-text tracking-wide">
-            Scriptorium
-          </span>
+         
         </Link>
 
         {/* Desktop links */}
