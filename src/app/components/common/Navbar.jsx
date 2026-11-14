@@ -67,6 +67,7 @@ export default function Navbar() {
             alt="scriptorium"
             width={140}
             height={140}
+             sizes="(min-width: 768px) 120px, 100px"
              className="h-14 w-auto object-contain md:h-16"
             priority
           />
